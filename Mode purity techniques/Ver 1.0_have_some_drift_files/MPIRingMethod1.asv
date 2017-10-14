@@ -1,0 +1,51 @@
+function [MPI, coeff, cube3, cube4] = MPIRingMethod1(cubePol3, cubePol4, scalingCoeff)
+
+cube3.data = cubePol3;
+cube4.data = cubePol4;
+
+% find cube size
+N = size(cube3.data);
+if numel(N) == 2
+    N(3) = 1;
+end
+
+% find Idc
+cube3.Idc = mean(cubePol3,3);
+cube4.Idc = mean(cubePol4,3);
+
+% find the ring points
+[xcm, ycm, radius] = FindDonutCenterAndRadius(abs(cube3.Idc + cube4.Idc));
+[junk, angles, ringPoints] = FindIntensityAroundRingDetailedR0Fixed(cube3.Idc + cube4.Idc, 0, xcm, ycm, radius, 0:5:355);
+% close;
+% find modal amplitudes
+
+cube3 = FindModeContributions(cube3, angles, ringPoints, scalingCoeff);
+cube4 = FindModeContributions(cube4, angles, ringPoints, scalingCoeff);
+
+[coeff, MPI] = GetCoeffAndMPI(cube3.coeff, cube4.coeff);
+
+
+% Pos(1)
+% plot(cube3.FScoeff);
+% legend('1','2','3','4','5','6')
+% Pos(2)
+% plot(cube4.FScoeff);
+% legend('1','2','3','4','5','6')
+% Pos(4)
+% plot(cube3.FScoeff(:,1));
+% hold on
+% plot(cube4.FScoeff(:,1)*2.8,'r');
+% hold off
+
+% Pos(4)
+% plot(cube3.FScoeff(:,3) + cube4.FScoeff(:,3),'r');
+% 
+% Pos(4)
+% plot(cube3.FScoeff(:,1) + cube4.FScoeff(:,1),'b');
+
+
+% stem(mean(cube3.FScoeff,1));
+% Pos(2)
+% stem(mean(cube4.FScoeff,1));
+
+

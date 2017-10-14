@@ -1,0 +1,51 @@
+clc;
+close all
+
+load L8_HE21odd
+
+f = fittype('a1 + a2*sind(x + a3) + a4*sind(2*x + a5)', ...
+        'coefficients',{'a1','a2','a3','a4','a5'});
+N = 601;
+A = zeros(5,N);   
+x = theta;
+Pos(2);
+Pos(3);
+Pos(4);
+
+for i = 1:N
+    y = ringProfiles(:,i);
+    
+    [FO,gof,output] = fit(x, y, f,'Startpoint',[1400 500 0 500 0]);
+    A(:,i) = abs([FO.a1 FO.a2 FO.a3 FO.a4 FO.a5]);
+    figure(1);
+    plot(x, y, x, FO(x));
+    hold on
+    axis([0 360 0 4095])
+    figure(2);
+    stem(A(2,:))
+    title('C1')
+    axis([0 N 0 1500])
+    figure(3);
+    stem(A(4,:))
+    title('C2')
+    axis([0 N 0 1500])
+    % pause    
+end
+%%
+
+% close all
+Pos(1);
+plot(A(2,:))
+axis([0 N 0 1500])
+Pos(2);
+plot(mod(A(3,:),360))
+Pos(3);
+plot(A(4,:))
+axis([0 N 0 2000])
+Pos(4);
+plot(mod(A(5,:),360))
+
+% powerRatioDbHE11All(chooseLength) = mean(A(2,:));
+% powerRatioDbTEAll(chooseLength) = mean(A(4,:));
+    
+% disp(mean(

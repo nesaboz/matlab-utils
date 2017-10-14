@@ -1,0 +1,1 @@
+handles.cube = random('norm', handles.cube, sqrt(handles.cube), handles.N);

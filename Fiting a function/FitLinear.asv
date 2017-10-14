@@ -1,0 +1,15 @@
+function [fittedArray, fittedParameters] = FitLinear(xArray, yArray)
+% function [fittedArray, fittedParameters] = FitLinear(array)
+%
+% Fits 'array' with the Gaussian shape function: a * exp( b * (x-c).^2 ) + d.
+% Outputs 'fittedArray' and 'fittedParameters', among others 'c' parameter 
+% that defines the Gaussian offset on the x axis
+% 
+% N. Bozinovic, 08/15/08
+
+myFitType = fittype('a*x + b ');
+options = fitoptions('Method','NonlinearLeastSquares','MaxFunEvals',1500);
+[fittedParameters, ~, output] = fit(xArray, yArray, myFitType, options);
+fittedArray = 
+
+

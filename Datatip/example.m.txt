@@ -1,0 +1,2 @@
+dcm_obj = datacursormode(gcf);
+info_struct = getCursorInfo(dcm_obj);

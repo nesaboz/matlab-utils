@@ -1,0 +1,33 @@
+function a = GetPosCoord(n)
+figure;
+s = get(0,'Screensize');
+
+sx = s(3);
+sy = s(4);
+min(sx/2,sy/2
+if (n==1);
+    a = [0 sy/2 sx/2 sy/2 - 75];
+end
+if (n==2);
+    a = [0 0 sx/2 sy/2-75];
+end
+if (n==3);
+    a = [sx/2 sy/2 sx/2 sy/2-75];
+end
+if (n==4);
+    a = [sx/2 0 sx/2 sy/2-75];
+end
+
+if (n==5);
+    a = [sx sy/2 sx/2 sy/2 - 75];
+end
+if (n==6);
+    a = [sx 0 sx/2 sy/2-75];
+end
+if (n==7);
+    a = [sx+sx/2 sy/2 sx/2 sy/2-75];
+end
+if (n==8);
+    a = [sx+sx/2 0 sx/2 sy/2-75];
+end
+close;

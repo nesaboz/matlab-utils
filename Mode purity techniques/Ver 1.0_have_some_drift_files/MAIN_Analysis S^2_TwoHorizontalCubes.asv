@@ -1,0 +1,129 @@
+% S^2 analysis on OD100
+
+
+cube = cubePol1 + cubePol2;
+ShowPixelIntensity(cube, lambda)
+%% plot averaged FFT
+s = shiftdim(sum(sum(abs(fftCubePol1),1),2));
+s(1) = sum(Idc1(:));
+s1 = 10*log10(s/s(1));
+s = shiftdim(sum(sum(abs(fftCubePol2),1),2));
+s(1) = sum(Idc2(:));
+s2 = 10*log10(s/s(1));
+
+lambdaStep = (lambda(2) - lambda(1));
+deltaNg = (0:1:M(3)-1)*(lambda(1)^2)/(lambdaStep *(L*1e9)*M(3));
+Pos(4)
+plot(deltaNg(1:round(end/2)),s1(1:round(end/2)));
+plot(deltaNg(1:round(end/2)),s2(1:round(end/2)));
+xlabel('\Delta n_{g}');
+ylabel('Normalized |FFT|')
+title(['|FFT| averaged over all pixels. dk110127OD100 L \approx ' num2str(L) ' m']);
+
+
+%%
+%% for plot s^2 graphs
+close all
+[xcm1, ycm1, radius1] = FindDonutCenterAndRadius(abs(Idc1));
+[maxima1, angle1, p1] = FindIntensityAroundRingDetailedR0Fixed(Idc1, 1, xcm1, ycm1, radius1,0:5:355);
+Shim(cubePol1(:,:,20),1,['Random image for L = ' num2str(L) 'm']);
+
+Pos(2)
+pixelProfile = shiftdim(cubePol1(p1(1,1), p1(1,2), :));
+plot(lambda, pixelProfile);
+xlabel('wavelength (nm)');
+title('random  pixel profile on the ring');
+
+% plot FFT
+lambdaStep = (lambda(2) - lambda(1));
+deltaNg = (0:1:M(3)-1)*(lambda(1)^2)/(lambdaStep *(L*1e9)*M(3));
+Pos(3)
+pixelProfileFFT = abs(fft(pixelProfile));
+semilogy(deltaNg(2:round(end/2)), pixelProfileFFT(2:round(end/2)));
+xlabel('\Delta n_{g}');
+title('FFT(same random pixel)');
+
+Shim(Idc1)
+title(['L = ' num2str(L) ' m. Idc.'])
+%%
+% plot FFT
+Pos(3)
+pixelProfileFFT = abs(fft(pixelProfile));
+semilogy(deltaNg(2:round(end/2)), pixelProfileFFT(2:round(end/2)));
+xlabel('\Delta n_{g}');
+title('FFT(same random pixel)');
+
+Shim(Idc1)
+title(['L = ' num2str(L) ' m. Idc.'])
+
+
+
+%% 6) Reconstruct TE/M distributed coupling mode
+
+clc;
+close all
+
+lambdaStep = (lambda(2) - lambda(1));
+deltaNg = (0:1:M(3)-1)*(lambda(1)^2)/(lambdaStep *(L*1e9)*M(3));
+q = 1;
+switch q
+    case 1
+        iBegin = 3;
+        iEnd = find(deltaNg > 3.4e-4,1);
+        myTitle = 'TE/TM';
+    case 2
+        iBegin = find(deltaNg > 1.5e-3,1);
+        iEnd =  find(deltaNg > 3.3e-3,1);
+        myTitle = 'HE_{11}';
+end
+
+
+[IA1, IB1] = RecoverModes(fftCubePol1,Idc1, iBegin, iEnd,2);
+[IA2, IB2] = RecoverModes(fftCubePol2,Idc2, iBegin, iEnd,2);
+
+IA = IA1 + IA2;
+IB = IB1 + IB2;
+
+Shim(IA, 1, myTitle);
+Shim(IB, 2, 'HE21even/odd');
+
+% 7) calculate MPI
+MPI = FindMPIForModes(IA, IB);
+% MPI = FindMPIForModes(IA2, IB2);
+disp(['MPI is ' num2str(MPI)]);
+
+%%
+
+LArray = [2000 1750 1500 1250 1000 600 300 150]; % m
+LArray = [ 1942    1660    1377    1095   812 530 300 150]; % m
+MPI1Array = [-4.7 -4.8 -4.6 -4.2 -5.7 -5.3 -8.3 -12.773]; % Distributed TE/M dB
+% MPI2Array = [-6.3]; % Total FFT coupling
+% MPI3Array = [-7.6]; % Without first 10 pixels
+Pos(1)
+h = plot(LArray, MPI1Array,'x','LineWidth',3,'MarkerSize', 14);
+axis([0 2010 -30 0])
+% legend('Standarad deviation method', 'S^2 method - all spectrum', 'TE/M distributed','Location','NorthEastOutside')
+legend('TE/M distributed','Location','NorthEastOutside')
+title('MPI for dk110127 OD100')
+xlabel('Length (m)');
+ylabel('MPI (dB)')
+
+%%
+%%  wavelength fluctuations of a pixel
+Shim(cube(:,:,1));
+[yc, xc]=  ginput(1);
+xc = round(xc);
+yc = round(yc);
+
+pixelIntensity = shiftdim(cube(xc,yc,:));
+Pos(1)
+% timing = 0:0.8:0.8*(size(cube,3)-1)  % for 
+plot(timing, 10*log10(pixelIntensity/mean(pixelIntensity)))
+xlabel('time (s)');
+ylabel('Intensity fluctuations (dB)');
+ title('500nm wavelength sweep');
+% title('exp. time = 252 \mus, \lambda = 1528.768nm');
+
+
+
+

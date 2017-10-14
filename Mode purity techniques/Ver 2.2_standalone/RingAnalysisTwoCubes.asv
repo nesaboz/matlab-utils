@@ -1,0 +1,68 @@
+% Ring technique
+% N.B. 2012/8/4
+
+%% 1) Load Stack
+pathname  ='C:\NENAD_DATA\ImagingData\2012_06_22_od105';
+[stack, pathname] = LoadStack(pathname);
+if numel(stack) == 0
+    return
+end
+[cubeBG, meanValue, stDev] = ConvertStackToMatrix(stack);
+
+%% 2) Wavelength or time sweep question
+wavelengthOrTime = questdlg('Is this wavelength or time ?', ...
+    'Wavelength or time question', ...
+    'Wavelength', 'Time','Wavelength');
+switch wavelengthOrTime,
+    case 'Wavelength',
+        [lambda, L] = FindWavelengths(stack);
+    case 'Time',
+        timing = GetTimeStamps(stack);
+end
+
+
+%% 3) Local background subtraction
+
+N = size(cubeBG);
+if numel(N) == 2
+    N(3) = 1;
+end
+cube = cubeBG;
+for i = 1:N(3)
+    
+    temp = cubeBG(1:10, 1:10,i);
+    bgValue = mean(temp(:));
+    cube(:,:,i) = cubeBG(:,:,i) - bgValue;
+end
+
+cube(cube<0) = eps*1e10;
+disp('Done 3 - subtracted background')
+
+%% 4) Crop cubes
+keepCenters = questdlg('Keep centers?', ...
+    'Keep centers', ...
+    'Yes', 'No', 'Yes');
+switch keepCenters,
+    case 'Yes',
+        
+    case 'No',
+        [xCenters, yCenters, delta, radius] = FindTwoCubeCentersHorizontal(cube);
+end
+[cube1, cube2, M] = ExtractTwoCubesHorizontal(cube, xCenters, yCenters, delta);
+%% 5) Ring Method
+correctionCoeff = 0.95;
+mode = questdlg('Mode?', ...
+    'Mode', ...
+    'OAM', 'LP01', 'OAM');
+switch mode,
+    case 'OAM',
+        [MPI, ~, profiles1, profiles2] = MPIRingMethod(cube1, cube2, radius, correctionCoeff,'OAM');
+        PlotMPIOAM;
+    case 'LP01',
+        [MPI, ~, profiles1, profiles2] = MPIRingMethod(cube1, cube2, radius, correctionCoeff,'LP01');
+        PlotMPILP01;
+end
+disp(['Average value on the ring is ' num2str(max(mean(mean(profiles1)), mean(mean(profiles2))))]);
+
+%%
+ylim([-35 0])

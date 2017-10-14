@@ -1,0 +1,31 @@
+clc;
+close all
+
+% its simple 
+% f = fittype('a*x^3 + b*x^2 + c*x + d');
+
+% s = fitoptions('Method','None',...
+%                'Lower',[1000, 0,    0,   0,    0],...
+%                'Upper',[2000, 1000, 360, 1000, 360]);
+f = fittype('a1 + a2*sind(x + a3) + a4*sind(2*x + a5)', ...
+        'coefficients',{'a1','a2','a3','a4','a5'}); % , 'options',s);
+A = zeros(5,72);   
+x = theta;
+Pos(2);
+Pos(3);
+Pos(4);
+
+[FO,gof,output] = fit(x, y, f,'Startpoint',[1400 500 0 500 0]);
+A(:,i) = abs([FO.a1 FO.a2 FO.a3 FO.a4 FO.a5]);
+% exposureTime = (330:20:99999)';
+% meanValue = interp1(exposureTimeFit, meanValueFit, exposureTime, 'cubicspline');
+% 
+% plot(exposureTimeFit, meanValueFit)
+% hold on; 
+% plot(exposureTime, meanValue,'r');
+% hold off
+% 
+% %%
+% X = [exposureTime, meanValue];
+% dlmwrite('zika.txt',X)
+% 

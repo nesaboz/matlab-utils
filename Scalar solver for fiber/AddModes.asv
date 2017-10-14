@@ -1,0 +1,11 @@
+function E3 = AddModes(vaMode1,Mode2,Mode3,str)
+if numel == 3
+    E1 = Mode1.x;
+    E2 = Mode2.x;
+    eval([' E3.x = ' str ';'])
+    E1 = Mode1.y;
+    E2 = Mode2.y;
+    eval([' E3.y = ' str ';'])
+    E3.abs = sqrt(E3.x.^2 + E3.y.^2);
+% E3.x = E1.x + E2.x;
+% E3.y = E1.y + E2.y;

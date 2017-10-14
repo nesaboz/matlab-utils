@@ -1,0 +1,59 @@
+function [coeff, yNew] = FourierSeriesForDegrees(x,y, reconstructionOrder)
+% [coeff, yNew] = FourierSeriesForDegrees(x,y, I)
+%
+% NOTE: when curve is shifted values for Fourier coefficients are different
+% (look at A), but A(2)^2 + A(3)^2 is invariant
+% coeff containes invariant Fourier series coefficients, 
+% The reconstructed yNew = goes to the order indicated by 'reconstructionOrder' 
+% A(1)/2 + A(2)*cosd(x) + A(3)*sind(x) +
+% A(4)*cosd(2*x) + A(5)*sind(2*x) + ..., 
+% Schaum's outlines by Hecht, page 205.
+
+% 1) Find coefficients
+dx = x(2) - x(1);
+lambda = (x(end) - x(1)) + dx;
+A = zeros(11,1);
+A(1) = 2/lambda*sum(y)*dx;
+A(2) = 2/lambda*sum(y.*cosd(x))*dx;
+A(3) = 2/lambda*sum(y.*sind(x))*dx;
+A(4) = 2/lambda*sum(y.*cosd(2*x))*dx;
+A(5) = 2/lambda*sum(y.*sind(2*x))*dx;
+A(6) = 2/lambda*sum(y.*cosd(3*x))*dx;
+A(7) = 2/lambda*sum(y.*sind(3*x))*dx;
+A(8) = 2/lambda*sum(y.*cosd(4*x))*dx;
+A(9) = 2/lambda*sum(y.*sind(4*x))*dx;
+A(10) = 2/lambda*sum(y.*cosd(5*x))*dx;
+A(11) = 2/lambda*sum(y.*sind(5*x))*dx;
+
+A = (abs(A) > 10^10*eps) .* A;
+
+% reconstruct to the order I
+y0 = A(1)/2;
+y1 = A(2)*cosd(1*x) + A(3)*sind(1*x);
+y2 = A(4)*cosd(2*x) + A(5)*sind(2*x);
+y3 = A(6)*cosd(3*x) + A(7)*sind(3*x);
+y4 = A(8)*cosd(4*x) + A(9)*sind(4*x);
+y5 = A(10)*cosd(5*x) + A(11)*sind(5*x);
+
+switch reconstructionOrder
+    case 0
+        yNew = y0;
+    case 1
+        yNew = y0 + y1;
+    case 2
+        yNew = y0 + y1 + y2;
+    case 3
+        yNew = y0 + y1 + y2 + y3;
+    case 4
+        yNew = y0 + y1 + y2 + y3 + y4;
+    case 5
+        yNew = y0 + y1 + y2 + y3 + y4 + y5;
+end
+       
+coeff(1) = A(1)/2;
+coeff(2) = sqrt(A(2)^2 + A(3)^2);
+coeff(3) = sqrt(A(4)^2 + A(5)^2);
+coeff(4) = sqrt(A(6)^2 + A(7)^2);
+coeff(5) = sqrt(A(8)^2 + A(9)^2);
+coeff(6) = sqrt(A(10)^2 + A(11)^2);
+

@@ -1,0 +1,14 @@
+function im = LoadImage
+[pathname, filename] = uigetfile('Load Image','c:\');
+im = double(imread(fullfile(pathname, filename))) - 2^15;
+ButtonName = questdlg('Subtract background?', ...
+                         'Question', ...
+                         'Yes', 'No');
+if strcmp(ButtonName,'Yes')
+   prompt={'Enter the exposure time: ')
+   name = 'input'
+   defaultanswer={'330'};
+   answer=inputdlg(prompt,name,numlines,defaultanswer);
+   im = im - FindBackground(330);
+end
+

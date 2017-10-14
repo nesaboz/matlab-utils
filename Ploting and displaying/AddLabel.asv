@@ -1,0 +1,19 @@
+function AddLabel(im, x, y, str, fontsize)
+% function AddLabel(im, x, y, str, fontsize)
+% usage: im = LoadImage; AddLabel(im, str, fontsize)
+
+if nargin < 3
+    fontsize = 14;
+end
+
+Shim(im);
+% Place the following line after createing the figure but before ploting
+% axes1 = axes('Parent',figure1,'FontSize',14);
+[xl,yl] = ginput(1);
+
+h = text(x, y, str ,'Color',[1 1 1], 'FontSize', fontsize);
+x = x1(1);
+y = x1(1);
+
+
+
